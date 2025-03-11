@@ -12,7 +12,8 @@ const containerOptions: Docker.ContainerCreateOptions = {
 	HostConfig: {
 		PortBindings: {
 			'8888/tcp': [{ HostPort: '8888' }]
-		}
+		},
+		AutoRemove: true
 	},
 	Cmd: ['start-notebook.py', '--NotebookApp.token=\'mytoken\'']
 };
@@ -21,7 +22,18 @@ async function createJupyterSession() {
 	const container = await docker.createContainer(containerOptions)
 	await container.start();
 	console.log('live!');
+
+	process.on('SIGINT', async () => {
+		await container.stop();
+		console.log('boom');
+		process.exit(0)
+	});
 }
 
-createJupyterSession();
 
+app.get('/', async (_, res) => {
+	await createJupyterSession();
+	setTimeout(() => res.redirect('http://localhost:8888/?token=mytoken'), 2000);
+})
+
+app.listen(3000, () => console.log('listenng'));
