@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "dockerode": "^4.0.4",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-http-proxy": "^2.1.1"
   }
